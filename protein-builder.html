@@ -216,7 +216,7 @@
     <div class="section-box">
         <div class="section-title">🥩 Step 1: Digestion — Cut Peptide Bonds (Prey #1)</div>
         <p style="font-size: 0.9rem; margin-bottom: 12px;">
-            Click each red <strong>✂️ Cut Bond</strong> button between amino acids to simulate digestive enzymes breaking chemical bonds:
+            Click each red <strong>✂️ Cut</strong> button between amino acids to simulate digestive enzymes breaking peptide bonds:
         </p>
         
         <div class="chain-container" id="chain1"></div>
@@ -226,7 +226,7 @@
     <div class="section-box" id="prey2Box" style="display: none; border-color: #fca5a5;">
         <div class="section-title" style="color: #b91c1c;">🥩 Step 1b: Hunt & Digest Prey #2</div>
         <p style="font-size: 0.9rem; margin-bottom: 12px;">
-            Cut the peptide bonds of your second catch to get additional missing amino acids!
+            Cut the peptide bonds of your second catch to collect missing essential amino acids!
         </p>
         <div class="chain-container" id="chain2"></div>
     </div>
@@ -327,19 +327,24 @@
                 const btn = document.createElement("button");
                 btn.className = "bond-cut-btn";
                 btn.innerText = "✂️ Cut";
-                btn.onclick = () => cutBond(btn, aa, chainData[i+1]);
+                btn.onclick = () => cutBond(btn, aa, chainData[i+1], i, chainData);
                 container.appendChild(btn);
             }
         });
     }
 
-    function cutBond(btn, leftAA, rightAA) {
+    function cutBond(btn, leftAA, rightAA, index, chainData) {
         if (btn.classList.contains("cut")) return;
         btn.classList.add("cut");
         btn.innerText = "⚡ Cut!";
         
-        // Add left amino acid if not added, or push free amino acids to pool
-        inventory.push(leftAA);
+        // Add left amino acid to inventory if first cut
+        if (index === 0) {
+            inventory.push(leftAA);
+        }
+        // Always add the right amino acid when its bond is severed
+        inventory.push(rightAA);
+
         renderPool();
     }
 
