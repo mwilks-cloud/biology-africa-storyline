@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Macromolecule Energy & Structure Lab</title>
+    <title>Drag & Drop Macromolecule Lab</title>
     <style>
         :root {
             --primary: #2e7d32;
-            --primary-light: #e8f5e9;
             --dark: #1f2937;
-            --border: #e2e8f0;
+            --border: #cbd5e1;
         }
 
         body {
@@ -20,197 +19,215 @@
             color: var(--dark);
         }
 
-        .tab-container {
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
             background: white;
+            padding: 20px;
             border-radius: 10px;
             border: 1px solid var(--border);
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            overflow: hidden;
-            max-width: 850px;
-            margin: 0 auto;
         }
 
-        .tabs {
+        h3 { color: var(--primary); margin-top: 0; }
+
+        /* Atom Bin */
+        .atom-bin {
             display: flex;
+            gap: 12px;
+            padding: 15px;
             background: #f1f5f9;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 12px 15px;
-            border: none;
-            background: none;
-            font-weight: 600;
-            color: #64748b;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-        }
-
-        .tab-btn.active {
-            background: white;
-            color: var(--primary);
-            border-bottom: 3px solid var(--primary);
-        }
-
-        .tab-content {
-            display: none;
-            padding: 20px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .molecule-card {
-            border: 2px solid var(--border);
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: #fff;
+            margin-bottom: 20px;
+            justify-content: center;
         }
 
-        .atom-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-right: 5px;
-        }
-
-        .carbon { background: #e2e8f0; color: #0f172a; }
-        .hydrogen { background: #fee2e2; color: #991b1b; }
-        .oxygen { background: #dbeafe; color: #1e40af; }
-        .nitrogen { background: #fef3c7; color: #92400e; }
-
-        .energy-bar-bg {
-            background: #e2e8f0;
-            height: 18px;
-            border-radius: 9px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .energy-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4ade80, #16a34a);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .interactive-box {
-            background: #f0fdf4;
-            border: 1px dashed var(--primary);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
+        .atom-tile {
             padding: 10px 18px;
             border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
+            font-weight: bold;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
         }
 
-        .btn:hover { background-color: #1b5e20; }
+        .atom-tile:active { cursor: grabbing; transform: scale(1.05); }
 
-        .result-box {
-            margin-top: 10px;
+        .c-tile { background: #334155; color: white; }
+        .h-tile { background: #ef4444; color: white; }
+        .o-tile { background: #3b82f6; color: white; }
+        .n-tile { background: #f59e0b; color: white; }
+
+        /* Drop Zone Area */
+        .drop-area {
+            border: 2px dashed var(--primary);
+            background: #f0fdf4;
+            min-height: 80px;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .drop-placeholder {
+            color: #64748b;
+            font-style: italic;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Energy Meter */
+        .meter-container {
+            margin: 20px 0;
+            background: #e2e8f0;
+            border-radius: 12px;
+            height: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #22c55e, #15803d);
+            transition: width 0.4s ease;
+        }
+
+        .meter-label {
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
             font-weight: bold;
-            color: #166534;
+            font-size: 0.85rem;
+            color: #0f172a;
+        }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-reset { background: #64748b; }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-<div class="tab-container">
-    <div class="tabs">
-        <button class="tab-btn active" onclick="openTab(event, 'tab1')">Activity 1: Atom & Energy Counter</button>
-        <button class="tab-btn" onclick="openTab(event, 'tab2')">Activity 2: Sucrose Digestion Simulator</button>
+<div class="container">
+    <h3>🧪 Hands-On Lab: Build a Molecule</h3>
+    <p>Click or drag elements into the assembly box to build custom biological molecules and test their energy output!</p>
+
+    <!-- Atom Selection Bin -->
+    <div class="atom-bin">
+        <div class="atom-tile c-tile" onclick="addAtom('C', '#334155')">+ Carbon (C)</div>
+        <div class="atom-tile h-tile" onclick="addAtom('H', '#ef4444')">+ Hydrogen (H)</div>
+        <div class="atom-tile o-tile" onclick="addAtom('O', '#3b82f6')">+ Oxygen (O)</div>
+        <div class="atom-tile n-tile" onclick="addAtom('N', '#f59e0b')">+ Nitrogen (N)</div>
     </div>
 
-    <!-- TAB 1 -->
-    <div id="tab1" class="tab-content active">
-        <h3>1. Carbon Atoms & Usable Energy Rule</h3>
-        <p><em>Rule from Background Reading:</em> Chemical bonds store energy. When bonds break during cellular respiration, energy is released. <strong>The more Carbon atoms in a molecule, the more potential energy it provides!</strong></p>
-
-        <div class="molecule-card">
-            <h4>Monosaccharide (Glucose - Carbohydrate)</h4>
-            <div>
-                <span class="atom-badge carbon">C: 6</span>
-                <span class="atom-badge hydrogen">H: 12</span>
-                <span class="atom-badge oxygen">O: 6</span>
-            </div>
-            <div class="energy-bar-bg"><div class="energy-bar-fill" id="bar-glucose" style="width: 40%;"></div></div>
-            <p><small>Relative Energy Yield: Moderate (~4 kcal/g)</small></p>
-        </div>
-
-        <div class="molecule-card">
-            <h4>Fatty Acid / Monoglyceride (Lipid)</h4>
-            <div>
-                <span class="atom-badge carbon">C: 16</span>
-                <span class="atom-badge hydrogen">H: 32</span>
-                <span class="atom-badge oxygen">O: 2</span>
-            </div>
-            <div class="energy-bar-bg"><div class="energy-bar-fill" id="bar-lipid" style="width: 90%;"></div></div>
-            <p><small>Relative Energy Yield: Very High (~9 kcal/g due to dense C-H chain!)</small></p>
-        </div>
-
-        <div class="molecule-card">
-            <h4>Amino Acid (Glycine - Protein)</h4>
-            <div>
-                <span class="atom-badge carbon">C: 2</span>
-                <span class="atom-badge hydrogen">H: 5</span>
-                <span class="atom-badge oxygen">O: 2</span>
-                <span class="atom-badge nitrogen">N: 1</span>
-            </div>
-            <div class="energy-bar-bg"><div class="energy-bar-fill" id="bar-glycine" style="width: 20%;"></div></div>
-            <p><small>Relative Energy Yield: Primary use is structural body building, not fast energy storage.</small></p>
-        </div>
+    <!-- Drop Zone -->
+    <h4>Your Assembled Molecule Structure:</h4>
+    <div class="drop-area" id="drop-zone">
+        <div class="drop-placeholder" id="placeholder">Click any element tile above to add atoms here...</div>
     </div>
 
-    <!-- TAB 2 -->
-    <div id="tab2" class="tab-content">
-        <h3>2. Digestion Reaction: Breaking Plant Sucrose</h3>
-        <p>When an elephant eats plant matter, enzymes break down complex disaccharides like <strong>Sucrose</strong> through hydrolysis reactions into simple sugar monomers.</p>
-
-        <div class="interactive-box">
-            <h4>Chemical Reaction:</h4>
-            <p style="font-size: 1.2rem; font-weight: bold;">
-                <span id="reactants" style="color:#c2410c;">Sucrose ($C_{12}H_{22}O_{11}$) + $H_2O$</span> 
-                <span id="arrow"> ➔ </span> 
-                <span id="products" style="color:#15803d; opacity: 0.3;">Glucose ($C_6H_{12}O_6$) + Fructose ($C_6H_{12}O_6$)</span>
-            </p>
-
-            <button class="btn" onclick="breakBonds()">Add Enzyme & Break Chemical Bond</button>
-            <div id="digestion-result" class="result-box"></div>
-        </div>
+    <!-- Real-time Energy Meter -->
+    <h4>Potential Usable Energy Output:</h4>
+    <div class="meter-container">
+        <div class="meter-fill" id="energy-meter"></div>
+        <div class="meter-label" id="meter-text">0 kcal/g (Add Carbon atoms!)</div>
     </div>
+
+    <div class="btn-group">
+        <button class="btn" onclick="analyzeMolecule()">Analyze Molecule Type</button>
+        <button class="btn btn-reset" onclick="resetLab()">Clear / Reset</button>
+    </div>
+
+    <div class="feedback-box" id="feedback"></div>
 </div>
 
 <script>
-    function openTab(evt, tabName) {
-        let contents = document.querySelectorAll('.tab-content');
-        contents.forEach(c => c.classList.remove('active'));
+    let atoms = { C: 0, H: 0, O: 0, N: 0 };
 
-        let buttons = document.querySelectorAll('.tab-btn');
-        buttons.forEach(b => b.classList.remove('active'));
+    function addAtom(type, color) {
+        document.getElementById('placeholder').style.display = 'none';
+        atoms[type]++;
 
-        document.getElementById(tabName).classList.add('active');
-        evt.currentTarget.classList.add('active');
+        const badge = document.createElement('span');
+        badge.style.background = color;
+        badge.style.color = 'white';
+        badge.style.padding = '6px 12px';
+        badge.style.borderRadius = '15px';
+        badge.style.fontWeight = 'bold';
+        badge.style.fontSize = '0.9rem';
+        badge.innerText = type;
+
+        document.getElementById('drop-zone').appendChild(badge);
+        updateMeter();
     }
 
-    function breakBonds() {
-        document.getElementById('products').style.opacity = '1';
-        document.getElementById('digestion-result').innerHTML = "⚡ Bond Broken! Energy is released, producing 2 single glucose/fructose monomers for immediate absorption.";
+    function updateMeter() {
+        // Energy rule: More Carbons = More Energy
+        let carbonCount = atoms.C;
+        let percentage = Math.min(carbonCount * 12.5, 100);
+        let energyVal = carbonCount * 0.75;
+
+        document.getElementById('energy-meter').style.width = percentage + '%';
+        document.getElementById('meter-text').innerText = `${energyVal.toFixed(1)} kcal/g potential energy (${carbonCount} Carbon bonds)`;
+    }
+
+    function analyzeMolecule() {
+        const fb = document.getElementById('feedback');
+        fb.style.display = 'block';
+
+        if (atoms.C === 0) {
+            fb.style.background = '#fee2e2';
+            fb.style.color = '#991b1b';
+            fb.innerText = "⚠️ Organic molecules require Carbon backbones! Add Carbon atoms to build a macromolecule.";
+        } else if (atoms.N > 0) {
+            fb.style.background = '#dcfce7';
+            fb.style.color = '#15803d';
+            fb.innerHTML = "<strong>✅ Protein / Amino Acid Detected!</strong><br>Contains Nitrogen (N). Essential for building lion/elephant muscle tissues and enzymes.";
+        } else if (atoms.C >= 10 && atoms.H >= 20) {
+            fb.style.background = '#fef3c7';
+            fb.style.color = '#b45309';
+            fb.innerHTML = "<strong>⚡ Lipid (Fat) Molecule Detected!</strong><br>High concentration of Carbon-Hydrogen bonds yields dense long-term energy storage.";
+        } else if (atoms.C >= 1 && atoms.O >= 1) {
+            fb.style.background = '#e0f2fe';
+            fb.style.color = '#0369a1';
+            fb.innerHTML = "<strong>🍞 Carbohydrate (Sugar) Detected!</strong><br>Composed of C, H, and O. Primary quick-energy source found in plant diets.";
+        } else {
+            fb.style.background = '#f1f5f9';
+            fb.style.color = '#334155';
+            fb.innerText = "Keep adding Hydrogen and Oxygen atoms to complete your biological molecule!";
+        }
+    }
+
+    function resetLab() {
+        atoms = { C: 0, H: 0, O: 0, N: 0 };
+        document.getElementById('drop-zone').innerHTML = '<div class="drop-placeholder" id="placeholder">Click any element tile above to add atoms here...</div>';
+        document.getElementById('energy-meter').style.width = '0%';
+        document.getElementById('meter-text').innerText = '0 kcal/g (Add Carbon atoms!)';
+        document.getElementById('feedback').style.display = 'none';
     }
 </script>
 
