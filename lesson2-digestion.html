@@ -1,73 +1,87 @@
-<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; color: #1f2937; line-height: 1.6;">
-
-    <!-- Lesson Header -->
-    <div style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; text-transform: uppercase;">Biology 1.2: Matter &amp; Energy</span>
-        <h1 style="margin: 10px 0 5px 0; font-size: 2rem; color: #ffffff;">Lesson 2: Digestion &amp; Rebuilding – How Food Becomes Muscle</h1>
-        <p style="margin: 0; font-size: 1.1rem; opacity: 0.95;">Breaking down prey protein into amino acids to build lion tissue!</p>
-    </div>
-
-    <!-- Guiding Question -->
-    <div style="background-color: #eff6ff; border: 2px dashed #3b82f6; padding: 18px; margin: 25px 0; border-radius: 8px;">
-        <h3 style="margin-top: 0; color: #1e3a8a; display: flex; align-items: center; gap: 8px;">
-            💡 Guiding Question
-        </h3>
-        <p style="margin-bottom: 0; font-size: 1.05rem;">
-            When a lion eats zebra muscle (protein), it can't directly attach zebra muscle onto its own body. Why must the lion break prey protein down into single <strong>amino acids</strong> before rebuilding them?
-        </p>
-    </div>
-
-    <!-- Step 1: Concept Explanation -->
-    <h2 style="color: #1e3a8a; border-bottom: 2px solid #dbeafe; padding-bottom: 5px; margin-top: 35px;">
-        Step 1: The Two-Step Protein Cycle
-    </h2>
-
-    <div style="display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0;">
-        <div style="flex: 1 1 0%; min-width: 250px; background: #ffffff; border: 1px solid #cbd5e1; border-top: 4px solid #ef4444; border-radius: 8px; padding: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="font-size: 2rem; margin-bottom: 5px;">✂️</div>
-            <h4 style="margin: 0 0 8px 0; color: #b91c1c;">1. Digestion (Hydrolysis)</h4>
-            <p style="margin: 0; font-size: 0.95rem;">Stomach acid and enzymes break bonds in food protein, separating long chains into free <strong>amino acids</strong>.</p>
-        </div>
-
-        <div style="flex: 1 1 0%; min-width: 250px; background: #ffffff; border: 1px solid #cbd5e1; border-top: 4px solid #16a34a; border-radius: 8px; padding: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="font-size: 2rem; margin-bottom: 5px;">🏗️</div>
-            <h4 style="margin: 0 0 8px 0; color: #15803d;">2. Protein Synthesis (Biosynthesis)</h4>
-            <p style="margin: 0; font-size: 0.95rem;">Lion ribosomes recombine those free amino acids into specific sequences to build lion muscle, hair, and enzymes.</p>
-        </div>
-    </div>
-
-    <!-- Step 2: Interactive Lab -->
-    <h2 style="color: #1e3a8a; border-bottom: 2px solid #dbeafe; padding-bottom: 5px; margin-top: 35px;">
-        Step 2: Interactive Lab – Rebuilding Lion Muscle
-    </h2>
-    <p>Use the digested amino acid pool below to assemble the specific amino acid sequence needed to build lion muscle protein:</p>
-
-    <div style="border: 1px solid #cccccc; border-radius: 8px; overflow: hidden; margin: 20px 0;">
-        <iframe src="https://mwilks-cloud.github.io/biology-africa-storyline/lesson2-digestion.html" width="100%" height="480" style="border: none;" loading="lazy"></iframe>
-    </div>
-
-    <!-- Step 3: Check Your Understanding -->
-    <h2 style="color: #1e3a8a; border-bottom: 2px solid #dbeafe; padding-bottom: 5px; margin-top: 35px;">
-        Step 3: Check Your Understanding
-    </h2>
-
-    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-top: 15px;">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lion Protein Rebuilder</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; background: #ffffff; color: #1f2937; }
+        .container { max-width: 800px; margin: 0 auto; background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #cbd5e1; }
+        h3 { color: #1e3a8a; margin-top: 0; font-size: 1.3rem; }
+        .stage { background: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
+        .aa-pool { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .aa-chip { background: #3b82f6; color: white; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; user-select: none; transition: background 0.2s; }
+        .aa-chip:hover { background: #1d4ed8; }
+        .target-box { border: 2px dashed #3b82f6; background: #ffffff; min-height: 55px; border-radius: 8px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { background: #1e3a8a; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-reset { background: #64748b; }
+        .feedback { margin-top: 15px; padding: 12px; border-radius: 6px; display: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>🦁 Interactive Lab: Rebuilding Lion Muscle Protein</h3>
+        <p style="margin-bottom: 15px;">A lion digested zebra muscle into individual amino acids. Select the amino acids in the correct order to assemble <strong>Lion Muscle Protein (Myosin)</strong>!</p>
         
-        <div style="margin-bottom: 20px;">
-            <p style="margin-top: 0; font-weight: bold; font-size: 1.05rem;">
-                1. Why do different proteins (like zebra muscle vs. lion muscle) have different structures and functions?
-            </p>
-            <details style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; cursor: pointer;">
-                <summary style="font-weight: bold; color: #1e3a8a;">🔍 Click here to reveal answer &amp; explanation</summary>
-                <div style="margin-top: 10px; color: #15803d; font-weight: bold;">
-                    ✅ Answer: The order and arrangement of amino acids
-                </div>
-                <p style="margin: 5px 0 0 0; font-size: 0.95rem;">
-                    <strong>Explanation:</strong> Just as changing the order of letters creates different words, changing the specific sequence of amino acids builds entirely different functional proteins!
-                </p>
-            </details>
+        <div class="stage">
+            <strong>Target Lion Muscle Sequence:</strong><br>
+            <span style="color:#1e3a8a; font-weight: bold; font-size: 1.05rem;">[ Leucine ] ➔ [ Glycine ] ➔ [ Valine ] ➔ [ Alanine ]</span>
         </div>
 
+        <h4 style="margin-bottom: 5px;">1. Click Amino Acids from the Digested Pool:</h4>
+        <div class="aa-pool" id="pool">
+            <div class="aa-chip" onclick="addAA('Glycine')">+ Glycine</div>
+            <div class="aa-chip" onclick="addAA('Leucine')">+ Leucine</div>
+            <div class="aa-chip" onclick="addAA('Alanine')">+ Alanine</div>
+            <div class="aa-chip" onclick="addAA('Valine')">+ Valine</div>
+            <div class="aa-chip" onclick="addAA('Proline')">+ Proline</div>
+        </div>
+
+        <h4 style="margin-bottom: 5px; margin-top: 20px;">2. Your Assembled Lion Muscle Chain:</h4>
+        <div class="target-box" id="chain"></div>
+
+        <div class="btn-group">
+            <button class="btn" onclick="checkProtein()">Build Lion Muscle</button>
+            <button class="btn btn-reset" onclick="resetChain()">Clear Chain</button>
+        </div>
+
+        <div class="feedback" id="fb"></div>
     </div>
 
-</div>
+    <script>
+        let built = [];
+        const target = ['Leucine', 'Glycine', 'Valine', 'Alanine'];
+
+        function addAA(aa) {
+            built.push(aa);
+            const chip = document.createElement('span');
+            chip.style.cssText = 'background:#15803d; color:white; padding:6px 12px; border-radius:15px; font-weight:bold;';
+            chip.innerText = aa;
+            document.getElementById('chain').appendChild(chip);
+        }
+
+        function checkProtein() {
+            const fb = document.getElementById('fb');
+            fb.style.display = 'block';
+            if (JSON.stringify(built) === JSON.stringify(target)) {
+                fb.style.background = '#dcfce7';
+                fb.style.color = '#15803d';
+                fb.style.border = '1px solid #86efac';
+                fb.innerHTML = '🎉 Success! The lion’s cells successfully linked the amino acids to build functional Lion Muscle Tissue!';
+            } else {
+                fb.style.background = '#fee2e2';
+                fb.style.color = '#991b1b';
+                fb.style.border = '1px solid #fca5a5';
+                fb.innerHTML = '❌ Incorrect sequence! Functional proteins require amino acids in a precise order. Click "Clear Chain" and try again.';
+            }
+        }
+
+        function resetChain() {
+            built = [];
+            document.getElementById('chain').innerHTML = '';
+            document.getElementById('fb').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
