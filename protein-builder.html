@@ -61,40 +61,54 @@
             gap: 8px;
         }
 
-        /* CHAIN & SCISSORS STYLING */
+        /* CHAIN & BOND STYLING */
         .chain-container {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             background: #f1f5f9;
-            padding: 15px;
+            padding: 18px 15px;
             border-radius: 8px;
             border: 1px solid #cbd5e1;
             margin-bottom: 15px;
         }
 
+        /* SLEEK BOND-STYLE CUT BUTTON */
         .bond-cut-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            background: #cbd5e1;
+            color: #334155;
+            border: 1px solid #94a3b8;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.1s, background 0.2s;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            margin: 0 2px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         .bond-cut-btn:hover {
-            background: #dc2626;
-            transform: scale(1.1);
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #dc2626;
+            transform: scale(1.15);
+            box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4);
         }
 
         .bond-cut-btn.cut {
-            background: #94a3b8;
+            background: transparent;
+            color: #94a3b8;
+            border: 1px dashed #cbd5e1;
             cursor: default;
             transform: none;
+            box-shadow: none;
+            padding: 1px 4px;
+            font-size: 0.65rem;
         }
 
         /* AMINO ACID CARDS */
@@ -216,7 +230,7 @@
     <div class="section-box">
         <div class="section-title">🥩 Step 1: Digestion — Cut Peptide Bonds (Prey #1)</div>
         <p style="font-size: 0.9rem; margin-bottom: 12px;">
-            Click each red <strong>✂️ Cut</strong> button between amino acids to simulate digestive enzymes breaking peptide bonds:
+            Click each peptide bond <strong>✂️ Cut</strong> button connecting the amino acids to simulate digestive enzymes severing chemical bonds:
         </p>
         
         <div class="chain-container" id="chain1"></div>
@@ -285,21 +299,21 @@
                 <span class="status-badge" id="status3">Incomplete</span>
             </div>
             <div class="target-slots" id="slots3">
+                <div class="slot" data-needed="VAL">VAL</div>
+                <div class="slot" data-needed="GLU">GLU</div>
                 <div class="slot" data-needed="LEU">LEU</div>
                 <div class="slot" data-needed="PHE">PHE</div>
                 <div class="slot" data-needed="THR">THR</div>
                 <div class="slot" data-needed="ARG">ARG</div>
-                <div class="slot" data-needed="VAL">VAL</div>
-                <div class="slot" data-needed="GLU">GLU</div>
             </div>
         </div>
 
         <!-- ALERT POPUP WHEN OUT OF AMINO ACIDS -->
         <div class="alert-box" id="alertBox">
             ⚠️ Missing Essential Amino Acids!<br>
-            You ran out of Leucine (LEU), Phenylalanine (PHE), Threonine (THR), and Arginine (ARG) to finish Hemoglobin!<br>
+            You placed Valine (VAL) and Glutamate (GLU), but ran out of Leucine (LEU), Phenylalanine (PHE), Threonine (THR), and Arginine (ARG) to finish Hemoglobin!<br>
             <span style="font-size: 0.88rem; font-weight: normal; margin-top: 6px; display: block;">
-                <strong>Key Realization:</strong> Animals cannot produce all amino acids on their own. The lion must hunt and digest a second prey to complete all essential body proteins!
+                <strong>Key Realization:</strong> Animals must eat and digest food to get <strong>essential amino acids</strong> that their bodies cannot synthesize on their own. Without a continuous and diverse diet, a lion cannot finish building critical proteins!
             </span>
             <button class="btn-lion" style="margin-top: 12px;" onclick="unlockPrey2()">🦁 Hunt Prey #2</button>
         </div>
@@ -307,8 +321,8 @@
 </div>
 
 <script>
-    const preyChain1 = ["SER", "VAL", "LYS", "HIS", "ASN", "GLU", "PRO", "GLY", "ILE", "CYS", "VAL", "SER"];
-    const preyChain2 = ["LEU", "PHE", "THR", "ARG", "VAL", "GLU", "LYS", "ALA"];
+    const preyChain1 = ["SER", "VAL", "LYS", "HIS", "ASN", "GLU", "PRO", "GLY", "ILE", "CYS", "VAL", "SER", "VAL", "GLU"];
+    const preyChain2 = ["LEU", "PHE", "THR", "ARG", "VAL", "GLU", "LYS", "ALA", "ILE", "HIS"];
 
     let inventory = [];
 
@@ -326,7 +340,7 @@
             if (i < chainData.length - 1) {
                 const btn = document.createElement("button");
                 btn.className = "bond-cut-btn";
-                btn.innerText = "✂️ Cut";
+                btn.innerHTML = "✂️ Cut";
                 btn.onclick = () => cutBond(btn, aa, chainData[i+1], i, chainData);
                 container.appendChild(btn);
             }
@@ -336,7 +350,7 @@
     function cutBond(btn, leftAA, rightAA, index, chainData) {
         if (btn.classList.contains("cut")) return;
         btn.classList.add("cut");
-        btn.innerText = "⚡ Cut!";
+        btn.innerHTML = "⚡ Cut";
         
         // Add left amino acid to inventory if first cut
         if (index === 0) {
