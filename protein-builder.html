@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lion Protein Builder & Digestion Lab</title>
+    <title>Lion Digestion & Protein Synthesis Lab</title>
     <style>
         :root {
             --primary: #059669;
@@ -40,15 +40,8 @@
             margin-bottom: 20px;
         }
 
-        .header h1 {
-            margin: 0 0 5px 0;
-            font-size: 1.8rem;
-        }
-
-        .header p {
-            margin: 0;
-            opacity: 0.9;
-        }
+        .header h1 { margin: 0 0 5px 0; font-size: 1.8rem; }
+        .header p { margin: 0; opacity: 0.9; }
 
         .section-box {
             background: #ffffff;
@@ -68,6 +61,42 @@
             gap: 8px;
         }
 
+        /* CHAIN & SCISSORS STYLING */
+        .chain-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 15px;
+        }
+
+        .bond-cut-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .bond-cut-btn:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .bond-cut-btn.cut {
+            background: #94a3b8;
+            cursor: default;
+            transform: none;
+        }
+
         /* AMINO ACID CARDS */
         .card-pool, .target-slots {
             display: flex;
@@ -85,43 +114,32 @@
             padding: 8px 14px;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #ffffff;
             cursor: pointer;
             user-select: none;
             box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.15s ease;
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
-        .aa-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .aa-card .sub {
-            font-size: 0.7rem;
-            font-weight: normal;
-            opacity: 0.9;
-        }
+        .aa-card:hover { transform: translateY(-2px); }
 
         /* AMINO ACID COLOR TYPES */
-        .aa-SER, .aa-ASN, .aa-CYS { background-color: #ec4899; } /* Pink/Polar */
+        .aa-SER, .aa-ASN, .aa-CYS, .aa-THR { background-color: #ec4899; } /* Pink/Polar */
         .aa-VAL, .aa-PRO, .aa-GLY, .aa-ILE, .aa-ALA, .aa-LEU, .aa-PHE { background-color: #10b981; } /* Green/Nonpolar */
         .aa-LYS, .aa-HIS, .aa-ARG { background-color: #3b82f6; } /* Blue/Basic */
         .aa-GLU { background-color: #f97316; } /* Orange/Acidic */
-        .aa-THR { background-color: #8b5cf6; } /* Purple */
 
         /* RECIPE TARGET SLOTS */
         .slot {
-            width: 70px;
-            height: 55px;
+            width: 65px;
+            height: 50px;
             border: 2px dashed #94a3b8;
             border-radius: 6px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             background: #ffffff;
@@ -130,33 +148,35 @@
             color: #64748b;
         }
 
-        .slot.filled {
-            border-style: solid;
-            border-color: transparent;
+        .slot.filled { border-style: solid; border-color: transparent; }
+
+        .recipe-block {
+            background: #fafafa;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
 
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
+        .recipe-title {
             font-weight: bold;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: background 0.2s ease;
+            color: #065f46;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
         }
 
-        .btn:hover {
-            background-color: var(--primary-dark);
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #e2e8f0;
+            color: #475569;
         }
 
-        .btn-lion {
-            background-color: var(--lion-red);
-        }
-
-        .btn-lion:hover {
-            background-color: #991b1b;
+        .status-badge.complete {
+            background: #d1fae5;
+            color: #047857;
         }
 
         /* ALERT POPUP */
@@ -171,6 +191,17 @@
             text-align: center;
             font-weight: bold;
         }
+
+        .btn-lion {
+            background-color: var(--lion-red);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-lion:hover { background-color: #991b1b; }
     </style>
 </head>
 <body>
@@ -178,76 +209,144 @@
 <div class="container">
     <div class="header">
         <h1>🦁 Lion Digestion & Protein Synthesis Lab</h1>
-        <p>Break apart prey proteins into free amino acids, then build new lion muscle tissue!</p>
+        <p>Cut peptide bonds to digest prey protein, then build essential lion body structures!</p>
     </div>
 
-    <!-- STEP 1: DIGEST PREY PROTEIN -->
+    <!-- STEP 1: DIGEST PREY PROTEIN #1 -->
     <div class="section-box">
-        <div class="section-title">🥩 Step 1: Digest Prey Protein (Break Chemical Bonds)</div>
-        <p style="font-size: 0.95rem; margin-bottom: 12px;">
-            The lion has eaten prey. Click below to use digestive enzymes (chemical scissors) to cut peptide bonds and break down the food protein into individual amino acids in the bloodstream!
-        </p>
-        <button class="btn" id="digestBtn" onclick="digestProtein()">✂️ Digest Prey Protein #1</button>
-    </div>
-
-    <!-- STEP 2: AMINO ACID BLOODSTREAM INVENTORY -->
-    <div class="section-box">
-        <div class="section-title">🩸 Available Free Amino Acids (Bloodstream Inventory)</div>
-        <div class="card-pool" id="aminoPool">
-            <span style="color: #94a3b8; font-style: italic;" id="emptyPoolText">Digest prey protein above to collect amino acids...</span>
-        </div>
-    </div>
-
-    <!-- STEP 3: LION MUSCLE PROTEIN RECIPE -->
-    <div class="section-box">
-        <div class="section-title">💪 Step 2: Build Lion Muscle Protein (Protein Synthesis)</div>
-        <p style="font-size: 0.95rem; margin-bottom: 12px;">
-            Click on an available amino acid card in your inventory to place it into the matching recipe slot below:
+        <div class="section-title">🥩 Step 1: Digestion — Cut Peptide Bonds (Prey #1)</div>
+        <p style="font-size: 0.9rem; margin-bottom: 12px;">
+            Click each red <strong>✂️ Cut Bond</strong> button between amino acids to simulate digestive enzymes breaking chemical bonds:
         </p>
         
-        <div style="font-weight: bold; color: #065f46; margin-bottom: 8px;">Target Recipe: Lion Muscle Fiber Protein</div>
-        <div class="target-slots" id="recipeSlots">
-            <!-- Target Amino Acid Slots -->
-            <div class="slot" data-needed="LYS">LYS</div>
-            <div class="slot" data-needed="SER">SER</div>
-            <div class="slot" data-needed="GLU">GLU</div>
-            <div class="slot" data-needed="VAL">VAL</div>
-            <div class="slot" data-needed="LEU">LEU</div>
-            <div class="slot" data-needed="ILE">ILE</div>
-            <div class="slot" data-needed="PRO">PRO</div>
-            <div class="slot" data-needed="PHE">PHE</div>
+        <div class="chain-container" id="chain1"></div>
+    </div>
+
+    <!-- PREY PROTEIN #2 (UNLOCKED LATER) -->
+    <div class="section-box" id="prey2Box" style="display: none; border-color: #fca5a5;">
+        <div class="section-title" style="color: #b91c1c;">🥩 Step 1b: Hunt & Digest Prey #2</div>
+        <p style="font-size: 0.9rem; margin-bottom: 12px;">
+            Cut the peptide bonds of your second catch to get additional missing amino acids!
+        </p>
+        <div class="chain-container" id="chain2"></div>
+    </div>
+
+    <!-- BLOODSTREAM INVENTORY -->
+    <div class="section-box">
+        <div class="section-title">🩸 Bloodstream Inventory (Free Absorbed Amino Acids)</div>
+        <div class="card-pool" id="aminoPool">
+            <span style="color: #94a3b8; font-style: italic;" id="emptyPoolText">Cut peptide bonds above to release amino acids into the bloodstream...</span>
+        </div>
+    </div>
+
+    <!-- STEP 2: BUILD LION PROTEINS -->
+    <div class="section-box">
+        <div class="section-title">💪 Step 2: Build Lion Body Proteins (Protein Synthesis)</div>
+        <p style="font-size: 0.9rem; margin-bottom: 15px;">
+            Click available amino acid cards from your inventory to place them into matching recipe slots:
+        </p>
+
+        <!-- PROTEIN #1: ACTIN -->
+        <div class="recipe-block">
+            <div class="recipe-title">
+                1. Lion Muscle Protein (Actin)
+                <span class="status-badge" id="status1">Incomplete</span>
+            </div>
+            <div class="target-slots" id="slots1">
+                <div class="slot" data-needed="LYS">LYS</div>
+                <div class="slot" data-needed="SER">SER</div>
+                <div class="slot" data-needed="GLU">GLU</div>
+                <div class="slot" data-needed="VAL">VAL</div>
+                <div class="slot" data-needed="ILE">ILE</div>
+                <div class="slot" data-needed="PRO">PRO</div>
+            </div>
         </div>
 
+        <!-- PROTEIN #2: COLLAGEN -->
+        <div class="recipe-block">
+            <div class="recipe-title">
+                2. Lion Tendon & Joint Protein (Collagen)
+                <span class="status-badge" id="status2">Incomplete</span>
+            </div>
+            <div class="target-slots" id="slots2">
+                <div class="slot" data-needed="PRO">PRO</div>
+                <div class="slot" data-needed="GLY">GLY</div>
+                <div class="slot" data-needed="VAL">VAL</div>
+                <div class="slot" data-needed="SER">SER</div>
+                <div class="slot" data-needed="HIS">HIS</div>
+                <div class="slot" data-needed="ASN">ASN</div>
+            </div>
+        </div>
+
+        <!-- PROTEIN #3: HEMOGLOBIN -->
+        <div class="recipe-block">
+            <div class="recipe-title">
+                3. Lion Blood Protein (Hemoglobin)
+                <span class="status-badge" id="status3">Incomplete</span>
+            </div>
+            <div class="target-slots" id="slots3">
+                <div class="slot" data-needed="LEU">LEU</div>
+                <div class="slot" data-needed="PHE">PHE</div>
+                <div class="slot" data-needed="THR">THR</div>
+                <div class="slot" data-needed="ARG">ARG</div>
+                <div class="slot" data-needed="VAL">VAL</div>
+                <div class="slot" data-needed="GLU">GLU</div>
+            </div>
+        </div>
+
+        <!-- ALERT POPUP WHEN OUT OF AMINO ACIDS -->
         <div class="alert-box" id="alertBox">
             ⚠️ Missing Essential Amino Acids!<br>
-            You do not have enough amino acids left in your bloodstream to complete this muscle protein!<br>
-            <span style="font-size: 0.9rem; font-weight: normal; margin-top: 5px; display: block;">
-                <strong>Realization:</strong> To build more body tissue, the lion must hunt and eat again to absorb missing nutrients!
+            You ran out of Leucine (LEU), Phenylalanine (PHE), Threonine (THR), and Arginine (ARG) to finish Hemoglobin!<br>
+            <span style="font-size: 0.88rem; font-weight: normal; margin-top: 6px; display: block;">
+                <strong>Key Realization:</strong> Animals cannot produce all amino acids on their own. The lion must hunt and digest a second prey to complete all essential body proteins!
             </span>
-            <button class="btn btn-lion" style="margin-top: 10px;" onclick="huntMoreFood()">🦁 Hunt & Digest Prey #2</button>
+            <button class="btn-lion" style="margin-top: 12px;" onclick="unlockPrey2()">🦁 Hunt Prey #2</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Initial digested protein amino acids from Slide 6
-    const preyProtein1 = ["SER", "VAL", "LYS", "VAL", "HIS", "ASN", "GLU", "LYS", "PRO", "PRO", "GLY", "ILE", "CYS", "VAL", "PRO", "SER"];
-    const preyProtein2 = ["LEU", "PHE", "THR", "LEU", "ARG", "ARG", "VAL", "GLU", "LYS", "ALA"];
+    const preyChain1 = ["SER", "VAL", "LYS", "HIS", "ASN", "GLU", "PRO", "GLY", "ILE", "CYS", "VAL", "SER"];
+    const preyChain2 = ["LEU", "PHE", "THR", "ARG", "VAL", "GLU", "LYS", "ALA"];
 
     let inventory = [];
 
-    function digestProtein() {
-        inventory = [...inventory, ...preyProtein1];
-        document.getElementById("digestBtn").disabled = true;
-        document.getElementById("digestBtn").style.opacity = "0.5";
-        document.getElementById("digestBtn").innerText = "✓ Protein #1 Digested";
+    function initChain(chainData, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        chainData.forEach((aa, i) => {
+            const card = document.createElement("div");
+            card.className = `aa-card aa-${aa}`;
+            card.style.cursor = "default";
+            card.innerText = aa;
+            container.appendChild(card);
+
+            if (i < chainData.length - 1) {
+                const btn = document.createElement("button");
+                btn.className = "bond-cut-btn";
+                btn.innerText = "✂️ Cut";
+                btn.onclick = () => cutBond(btn, aa, chainData[i+1]);
+                container.appendChild(btn);
+            }
+        });
+    }
+
+    function cutBond(btn, leftAA, rightAA) {
+        if (btn.classList.contains("cut")) return;
+        btn.classList.add("cut");
+        btn.innerText = "⚡ Cut!";
+        
+        // Add left amino acid if not added, or push free amino acids to pool
+        inventory.push(leftAA);
         renderPool();
     }
 
-    function huntMoreFood() {
-        inventory = [...inventory, ...preyProtein2];
+    function unlockPrey2() {
+        document.getElementById("prey2Box").style.display = "block";
         document.getElementById("alertBox").style.display = "none";
-        renderPool();
+        initChain(preyChain2, "chain2");
     }
 
     function renderPool() {
@@ -255,19 +354,19 @@
         pool.innerHTML = "";
 
         if (inventory.length === 0) {
-            pool.innerHTML = `<span style="color: #94a3b8; font-style: italic;">Digest prey protein above to collect amino acids...</span>`;
+            pool.innerHTML = `<span style="color: #94a3b8; font-style: italic;">Cut peptide bonds above to release amino acids into the bloodstream...</span>`;
             return;
         }
 
         inventory.forEach((aa, index) => {
             const card = document.createElement("div");
             card.className = `aa-card aa-${aa}`;
-            card.innerHTML = `<span>${aa}</span>`;
+            card.innerText = aa;
             card.onclick = () => placeAminoAcid(aa, index);
             pool.appendChild(card);
         });
 
-        checkMissingNutrients();
+        checkProgress();
     }
 
     function placeAminoAcid(aa, index) {
@@ -276,7 +375,7 @@
         for (let slot of slots) {
             if (slot.dataset.needed === aa) {
                 slot.classList.add("filled");
-                slot.innerHTML = `<div class="aa-card aa-${aa}" style="margin:0; width:100%; height:100%; justify-content:center;">${aa}</div>`;
+                slot.innerHTML = `<div class="aa-card aa-${aa}" style="margin:0; width:100%; height:100%;">${aa}</div>`;
                 inventory.splice(index, 1);
                 renderPool();
                 return;
@@ -284,17 +383,33 @@
         }
     }
 
-    function checkMissingNutrients() {
-        const unfilledSlots = document.querySelectorAll(".slot:not(.filled)");
-        if (unfilledSlots.length > 0) {
-            const neededTypes = Array.from(unfilledSlots).map(s => s.dataset.needed);
-            const hasMatches = neededTypes.some(type => inventory.includes(type));
+    function checkProgress() {
+        // Update recipe status badges
+        [1, 2, 3].forEach(num => {
+            const total = document.querySelectorAll(`#slots${num} .slot`).length;
+            const filled = document.querySelectorAll(`#slots${num} .slot.filled`).length;
+            const badge = document.getElementById(`status${num}`);
+            if (total === filled) {
+                badge.className = "status-badge complete";
+                badge.innerText = "✓ Synthesized!";
+            }
+        });
+
+        // Check if stuck on Hemoglobin
+        const unfilledHemoglobin = document.querySelectorAll("#slots3 .slot:not(.filled)").length;
+        if (unfilledHemoglobin > 0 && document.getElementById("prey2Box").style.display === "none") {
+            const currentNeeded = Array.from(document.querySelectorAll(".slot:not(.filled)")).map(s => s.dataset.needed);
+            const hasMatch = currentNeeded.some(type => inventory.includes(type));
             
-            if (!hasMatches && inventory.length > 0) {
+            // If all bonds of Prey 1 are cut and no matching AA is left in inventory
+            if (!hasMatch && document.querySelectorAll("#chain1 .bond-cut-btn:not(.cut)").length === 0) {
                 document.getElementById("alertBox").style.display = "block";
             }
         }
     }
+
+    // Initialize Prey #1 Chain on load
+    initChain(preyChain1, "chain1");
 </script>
 
 </body>
