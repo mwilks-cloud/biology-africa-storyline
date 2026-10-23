@@ -3,150 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Concept Check</title>
+    <title>Macromolecule Energy & Structure Lab</title>
     <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #e8f5e9;
+            --dark: #1f2937;
+            --border: #e2e8f0;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #ffffff;
-            color: #1f2937;
+            padding: 15px;
+            background-color: #f8fafc;
+            color: var(--dark);
         }
 
-        .interactive-container {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 24px;
-            background-color: #f8fafc;
-            max-width: 800px;
+        .tab-container {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+            max-width: 850px;
             margin: 0 auto;
         }
 
-        h3 {
-            color: #2e7d32;
-            margin-top: 0;
+        .tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-bottom: 1px solid var(--border);
         }
 
-        .question {
-            font-size: 1.05rem;
-            margin-bottom: 16px;
-            line-height: 1.5;
-        }
-
-        .option {
-            display: block;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin-bottom: 10px;
+        .tab-btn {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: #64748b;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
+            font-size: 0.95rem;
         }
 
-        .option:hover {
-            border-color: #2e7d32;
-            background-color: #f0fdf4;
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
         }
 
-        .option input {
-            margin-right: 10px;
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .molecule-card {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+
+        .atom-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .carbon { background: #e2e8f0; color: #0f172a; }
+        .hydrogen { background: #fee2e2; color: #991b1b; }
+        .oxygen { background: #dbeafe; color: #1e40af; }
+        .nitrogen { background: #fef3c7; color: #92400e; }
+
+        .energy-bar-bg {
+            background: #e2e8f0;
+            height: 18px;
+            border-radius: 9px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .energy-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #16a34a);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .interactive-box {
+            background: #f0fdf4;
+            border: 1px dashed var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 15px;
         }
 
         .btn {
-            background-color: #2e7d32;
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 10px 24px;
+            padding: 10px 18px;
             border-radius: 6px;
-            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             margin-top: 10px;
-            transition: background 0.2s;
         }
 
-        .btn:hover {
-            background-color: #1b5e20;
-        }
+        .btn:hover { background-color: #1b5e20; }
 
-        .feedback {
-            margin-top: 16px;
-            padding: 14px;
-            border-radius: 6px;
-            font-weight: 500;
-            display: none;
-            line-height: 1.5;
-        }
-
-        .feedback.correct {
-            display: block;
-            background-color: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-
-        .feedback.incorrect {
-            display: block;
-            background-color: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
+        .result-box {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #166534;
         }
     </style>
 </head>
 <body>
 
-<div class="interactive-container">
-    <h3>Self-Check: Nitrogen Transfer in Food Webs</h3>
-    
-    <p class="question">
-        An elephant's plant diet is high in carbohydrates containing only <strong>Carbon (C)</strong>, <strong>Hydrogen (H)</strong>, and <strong>Oxygen (O)</strong>. However, an elephant's body requires large amounts of protein containing <strong>Nitrogen (N)</strong> to build muscle.<br><br>
-        <strong>Where does the elephant get the Nitrogen required to build its proteins?</strong>
-    </p>
+<div class="tab-container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'tab1')">Activity 1: Atom & Energy Counter</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab2')">Activity 2: Sucrose Digestion Simulator</button>
+    </div>
 
-    <form id="quiz-form">
-        <label class="option">
-            <input type="radio" name="q1" value="a">
-            <strong>A)</strong> Elephants absorb gaseous Nitrogen ($N_2$) directly from the air when breathing.
-        </label>
-        
-        <label class="option">
-            <input type="radio" name="q1" value="b">
-            <strong>B)</strong> Elephants obtain Nitrogen by ingesting plant proteins containing nitrogen that plants absorbed from soil nutrients.
-        </label>
-        
-        <label class="option">
-            <input type="radio" name="q1" value="c">
-            <strong>C)</strong> Elephants synthesize Nitrogen atoms internally through chemical metabolic processes.
-        </label>
+    <!-- TAB 1 -->
+    <div id="tab1" class="tab-content active">
+        <h3>1. Carbon Atoms & Usable Energy Rule</h3>
+        <p><em>Rule from Background Reading:</em> Chemical bonds store energy. When bonds break during cellular respiration, energy is released. <strong>The more Carbon atoms in a molecule, the more potential energy it provides!</strong></p>
 
-        <button type="button" class="btn" onclick="checkAnswer()">Check Answer</button>
-    </form>
+        <div class="molecule-card">
+            <h4>Monosaccharide (Glucose - Carbohydrate)</h4>
+            <div>
+                <span class="atom-badge carbon">C: 6</span>
+                <span class="atom-badge hydrogen">H: 12</span>
+                <span class="atom-badge oxygen">O: 6</span>
+            </div>
+            <div class="energy-bar-bg"><div class="energy-bar-fill" id="bar-glucose" style="width: 40%;"></div></div>
+            <p><small>Relative Energy Yield: Moderate (~4 kcal/g)</small></p>
+        </div>
 
-    <div id="feedback" class="feedback"></div>
+        <div class="molecule-card">
+            <h4>Fatty Acid / Monoglyceride (Lipid)</h4>
+            <div>
+                <span class="atom-badge carbon">C: 16</span>
+                <span class="atom-badge hydrogen">H: 32</span>
+                <span class="atom-badge oxygen">O: 2</span>
+            </div>
+            <div class="energy-bar-bg"><div class="energy-bar-fill" id="bar-lipid" style="width: 90%;"></div></div>
+            <p><small>Relative Energy Yield: Very High (~9 kcal/g due to dense C-H chain!)</small></p>
+        </div>
+
+        <div class="molecule-card">
+            <h4>Amino Acid (Glycine - Protein)</h4>
+            <div>
+                <span class="atom-badge carbon">C: 2</span>
+                <span class="atom-badge hydrogen">H: 5</span>
+                <span class="atom-badge oxygen">O: 2</span>
+                <span class="atom-badge nitrogen">N: 1</span>
+            </div>
+            <div class="energy-bar-bg"><div class="energy-bar-fill" id="bar-glycine" style="width: 20%;"></div></div>
+            <p><small>Relative Energy Yield: Primary use is structural body building, not fast energy storage.</small></p>
+        </div>
+    </div>
+
+    <!-- TAB 2 -->
+    <div id="tab2" class="tab-content">
+        <h3>2. Digestion Reaction: Breaking Plant Sucrose</h3>
+        <p>When an elephant eats plant matter, enzymes break down complex disaccharides like <strong>Sucrose</strong> through hydrolysis reactions into simple sugar monomers.</p>
+
+        <div class="interactive-box">
+            <h4>Chemical Reaction:</h4>
+            <p style="font-size: 1.2rem; font-weight: bold;">
+                <span id="reactants" style="color:#c2410c;">Sucrose ($C_{12}H_{22}O_{11}$) + $H_2O$</span> 
+                <span id="arrow"> ➔ </span> 
+                <span id="products" style="color:#15803d; opacity: 0.3;">Glucose ($C_6H_{12}O_6$) + Fructose ($C_6H_{12}O_6$)</span>
+            </p>
+
+            <button class="btn" onclick="breakBonds()">Add Enzyme & Break Chemical Bond</button>
+            <div id="digestion-result" class="result-box"></div>
+        </div>
+    </div>
 </div>
 
 <script>
-    function checkAnswer() {
-        const selected = document.querySelector('input[name="q1"]:checked');
-        const feedback = document.getElementById('feedback');
+    function openTab(evt, tabName) {
+        let contents = document.querySelectorAll('.tab-content');
+        contents.forEach(c => c.classList.remove('active'));
 
-        if (!selected) {
-            feedback.className = "feedback incorrect";
-            feedback.innerText = "Please select an answer before checking.";
-            return;
-        }
+        let buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(b => b.classList.remove('active'));
 
-        if (selected.value === 'b') {
-            feedback.className = "feedback correct";
-            feedback.innerHTML = "<strong>Correct!</strong> Animals cannot absorb atmospheric nitrogen gas directly, nor can living organisms create new chemical elements. Plants take up fixed nitrogen compounds (nitrates) from the soil to make amino acids, which herbivores ingest to build their own tissue proteins.";
-        } else if (selected.value === 'a') {
-            feedback.className = "feedback incorrect";
-            feedback.innerHTML = "<strong>Incorrect:</strong> While the air is ~78% Nitrogen gas ($N_2$), animals cannot fix atmospheric nitrogen gas into biological molecules through respiration.";
-        } else {
-            feedback.className = "feedback incorrect";
-            feedback.innerHTML = "<strong>Incorrect:</strong> Chemical reactions in living organisms rearrange existing atoms—they cannot create new elements like Nitrogen from Carbon, Hydrogen, or Oxygen.";
-        }
+        document.getElementById(tabName).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    function breakBonds() {
+        document.getElementById('products').style.opacity = '1';
+        document.getElementById('digestion-result').innerHTML = "⚡ Bond Broken! Energy is released, producing 2 single glucose/fructose monomers for immediate absorption.";
     }
 </script>
 
