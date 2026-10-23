@@ -236,7 +236,7 @@
         <div class="chain-container" id="chain1"></div>
     </div>
 
-    <!-- PREY PROTEIN #2 (UNLOCKED LATER) -->
+    <!-- PREY PROTEIN #2 (HIDDEN INITIALLY) -->
     <div class="section-box" id="prey2Box" style="display: none; border-color: #fca5a5;">
         <div class="section-title" style="color: #b91c1c;">🥩 Step 1b: Hunt & Digest Prey #2</div>
         <p style="font-size: 0.9rem; margin-bottom: 12px;">
@@ -363,9 +363,13 @@
     }
 
     function unlockPrey2() {
-        document.getElementById("prey2Box").style.display = "block";
+        const box = document.getElementById("prey2Box");
+        box.style.display = "block";
         document.getElementById("alertBox").style.display = "none";
         initChain(preyChain2, "chain2");
+
+        // Smoothly scroll the window directly to the Step 1b section
+        box.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function renderPool() {
