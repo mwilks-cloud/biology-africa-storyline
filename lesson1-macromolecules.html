@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en"<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual Molecular Structure Lab</title>
+    <title>Visual Bond & Energy Lab</title>
     <style>
         :root { --primary: #1e3a8a; --dark: #1f2937; --border: #cbd5e1; }
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; background-color: #f8fafc; color: var(--dark); }
@@ -18,44 +17,56 @@
         .n-btn { background: #f59e0b; }
         
         /* Canvas Stage for Visual Bonds */
-        .stage-box { position: relative; width: 100%; height: 220px; background: #fafafa; border: 2px dashed #94a3b8; border-radius: 8px; overflow: hidden; margin-bottom: 15px; }
+        .stage-box { position: relative; width: 100%; height: 200px; background: #fafafa; border: 2px dashed #94a3b8; border-radius: 8px; overflow: hidden; margin-bottom: 15px; }
         #svg-bonds { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .atom-nodes { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 20px; padding: 20px; box-sizing: border-box; }
+        .atom-nodes { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 18px; padding: 20px; box-sizing: border-box; }
         
-        .atom-node { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 0.9rem; }
+        .atom-node { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 0.9rem; transition: all 0.4s ease; }
         .c-node { background: #334155; }
         .h-node { background: #ef4444; }
         .o-node { background: #3b82f6; }
         .n-node { background: #f59e0b; }
 
+        /* Energy Meter */
+        .meter-container { margin: 15px 0; background: #e2e8f0; border-radius: 12px; height: 26px; overflow: hidden; position: relative; }
+        .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #ef4444); transition: width 0.4s ease; }
+        .meter-label { position: absolute; top: 3px; left: 50%; transform: translateX(-50%); font-weight: bold; font-size: 0.85rem; color: #0f172a; }
+
         .btn-group { display: flex; gap: 10px; margin-top: 15px; }
         .btn { padding: 10px 18px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background: var(--primary); color: white; }
+        .btn-break { background: #dc2626; }
         .btn-reset { background: #64748b; }
         .feedback-box { margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: 500; display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h3>🧪 Visual Molecular Structure Lab</h3>
-        <p>Add atoms to form real covalent chemical bonds (represented by connecting lines). Test if your combination creates a realistic organic molecule!</p>
+        <h3>🧪 Visual Bond & Energy Lab</h3>
+        <p>1. Click element buttons to add atoms & connect high-energy chemical bonds.<br>2. Break the bonds to release usable cellular energy (ATP)!</p>
 
         <div class="atom-bin">
-            <button class="atom-btn c-btn" onclick="addAtom('C', '#334155')">+ Carbon (C)</button>
-            <button class="atom-btn h-btn" onclick="addAtom('H', '#ef4444')">+ Hydrogen (H)</button>
-            <button class="atom-btn o-btn" onclick="addAtom('O', '#3b82f6')">+ Oxygen (O)</button>
-            <button class="atom-btn n-btn" onclick="addAtom('N', '#f59e0b')">+ Nitrogen (N)</button>
+            <button class="atom-btn c-btn" onclick="addAtom('C')">+ Carbon (C)</button>
+            <button class="atom-btn h-btn" onclick="addAtom('H')">+ Hydrogen (H)</button>
+            <button class="atom-btn o-btn" onclick="addAtom('O')">+ Oxygen (O)</button>
+            <button class="atom-btn n-btn" onclick="addAtom('N')">+ Nitrogen (N)</button>
         </div>
 
-        <h4>Visual Molecular Structure & Bonds:</h4>
+        <h4>Visual Molecular Bonds:</h4>
         <div class="stage-box" id="stage">
             <svg id="svg-bonds"></svg>
             <div class="atom-nodes" id="node-container">
-                <span style="color:#64748b; font-style:italic;" id="empty-msg">Click element buttons above to assemble atoms & draw covalent bonds...</span>
+                <span style="color:#64748b; font-style:italic;" id="empty-msg">Click element buttons above to assemble atoms & form covalent bonds...</span>
             </div>
         </div>
 
+        <h4>Stored Chemical Energy (Potential in Bonds):</h4>
+        <div class="meter-container">
+            <div class="meter-fill" id="energy-meter"></div>
+            <div class="meter-label" id="meter-text">0 Chemical Bonds Formed (0 kcal/g)</div>
+        </div>
+
         <div class="btn-group">
-            <button class="btn" onclick="analyzeStructure()">Validate & Analyze Molecule</button>
+            <button class="btn btn-break" onclick="breakBonds()">💥 Break Bonds & Release Energy</button>
             <button class="btn btn-reset" onclick="resetLab()">Clear / Reset</button>
         </div>
 
@@ -65,8 +76,10 @@
     <script>
         let atoms = { C: 0, H: 0, O: 0, N: 0 };
         let nodeList = [];
+        let bondsBroken = false;
 
-        function addAtom(type, color) {
+        function addAtom(type) {
+            if (bondsBroken) return;
             document.getElementById('empty-msg').style.display = 'none';
             atoms[type]++;
             
@@ -78,15 +91,15 @@
             nodeList.push(node);
 
             drawBonds();
+            updateEnergyMeter();
         }
 
         function drawBonds() {
             const svg = document.getElementById('svg-bonds');
-            svg.innerHTML = ''; // Clear existing lines
+            svg.innerHTML = ''; 
 
-            if (nodeList.length < 2) return;
+            if (nodeList.length < 2 || bondsBroken) return;
 
-            // Draw line bonds between consecutive atoms to show chain linking
             for (let i = 0; i < nodeList.length - 1; i++) {
                 const rect1 = nodeList[i].getBoundingClientRect();
                 const rect2 = nodeList[i+1].getBoundingClientRect();
@@ -102,172 +115,67 @@
                 line.setAttribute('y1', y1);
                 line.setAttribute('x2', x2);
                 line.setAttribute('y2', y2);
-                line.setAttribute('stroke', '#475569');
-                line.setAttribute('stroke-width', '3');
+                line.setAttribute('stroke', '#ef4444');
+                line.setAttribute('stroke-width', '4');
                 svg.appendChild(line);
             }
         }
 
-        function analyzeStructure() {
+        function updateEnergyMeter() {
+            const bondCount = Math.max(0, nodeList.length - 1);
+            const percentage = Math.min(bondCount * 10, 100);
+            const energyVal = (bondCount * 4.1).toFixed(1);
+
+            document.getElementById('energy-meter').style.width = percentage + '%';
+            document.getElementById('meter-text').innerText = `${bondCount} Covalent Bonds Formed (${energyVal} kcal Stored Energy)`;
+        }
+
+        function breakBonds() {
             const fb = document.getElementById('feedback');
             fb.style.display = 'block';
 
-            const { C, H, O, N } = atoms;
+            const bondCount = Math.max(0, nodeList.length - 1);
 
-            if (C === 0) {
+            if (bondCount === 0) {
                 fb.style.background = '#fee2e2';
                 fb.style.color = '#991b1b';
-                fb.innerHTML = '⚠️ <strong>Incomplete Structure!</strong> Organic biomolecules require a Carbon backbone. Add Carbon atoms!';
-            } else if (N > 0 && C >= 2 && H >= 4) {
-                fb.style.background = '#dcfce7';
-                fb.style.color = '#15803d';
-                fb.innerHTML = '<strong>✅ Real Structure Formed: Amino Acid Monomer!</strong><br>Contains an Amino group (-NH₂) bonded to a Central Carbon. Used to build proteins & muscle tissue.';
-            } else if (C >= 1 && H >= 2 && O >= 1 && N === 0) {
-                fb.style.background = '#e0f2fe';
-                fb.style.color = '#0369a1';
-                fb.innerHTML = '<strong>🍞 Real Structure Formed: Carbohydrate (Monosaccharide) Ring!</strong><br>Follows the 1:2:1 ratio (CH₂O). Used by cells for quick energy.';
-            } else if (C >= 3 && H >= 6 && O === 1 && N === 0) {
-                fb.style.background = '#fef3c7';
-                fb.style.color = '#b45309';
-                fb.innerHTML = '<strong>🥑 Real Structure Formed: Hydrocarbon / Fatty Acid Chain!</strong><br>High ratio of C-H covalent bonds stores dense long-term energy (Lipid).';
-            } else {
-                fb.style.background = '#f1f5f9';
-                fb.style.color = '#334155';
-                fb.innerHTML = '🔬 <strong>Unstable Intermediate:</strong> Add more Hydrogen or Oxygen atoms to satisfy valence bond rules and complete a stable macromolecule monomer.';
+                fb.innerHTML = '⚠️ <strong>No Bonds to Break!</strong> Add at least 2 atoms to form covalent bonds first.';
+                return;
             }
+
+            bondsBroken = true;
+
+            // Clear visual bond lines
+            document.getElementById('svg-bonds').innerHTML = '';
+
+            // Scatter atoms visually to represent digestion / bond breakage
+            nodeList.forEach(node => {
+                const randomX = (Math.random() - 0.5) * 60;
+                const randomY = (Math.random() - 0.5) * 60;
+                node.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.85)`;
+                node.style.opacity = '0.7';
+            });
+
+            const totalEnergy = (bondCount * 4.1).toFixed(1);
+
+            fb.style.background = '#dcfce7';
+            fb.style.color = '#15803d';
+            fb.style.border = '1px solid #86efac';
+            fb.innerHTML = `🔥 <strong>Bonds Broken! Released ${totalEnergy} kcal of Usable Cellular Energy (ATP)!</strong><br>When cells break chemical bonds through digestion and cellular respiration, energy stored in those shared electron bonds is released to power the body!`;
         }
 
         function resetLab() {
             atoms = { C: 0, H: 0, O: 0, N: 0 };
             nodeList = [];
-            document.getElementById('node-container').innerHTML = '<span style="color:#64748b; font-style:italic;" id="empty-msg">Click element buttons above to assemble atoms & draw covalent bonds...</span>';
+            bondsBroken = false;
+            document.getElementById('node-container').innerHTML = '<span style="color:#64748b; font-style:italic;" id="empty-msg">Click element buttons above to assemble atoms & form covalent bonds...</span>';
             document.getElementById('svg-bonds').innerHTML = '';
+            document.getElementById('energy-meter').style.width = '0%';
+            document.getElementById('meter-text').innerText = '0 Chemical Bonds Formed (0 kcal/g)';
             document.getElementById('feedback').style.display = 'none';
         }
 
         window.addEventListener('resize', drawBonds);
     </script>
-</body>
-</html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drag & Drop Macromolecule Lab</title>
-    <style>
-        :root { --primary: #2e7d32; --dark: #1f2937; --border: #cbd5e1; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 15px; background-color: #f8fafc; color: var(--dark); }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h3 { color: var(--primary); margin-top: 0; }
-        .atom-bin { display: flex; gap: 12px; padding: 15px; background: #f1f5f9; border-radius: 8px; margin-bottom: 20px; justify-content: center; }
-        .atom-tile { padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; user-select: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s; }
-        .atom-tile:active { transform: scale(1.05); }
-        .c-tile { background: #334155; color: white; }
-        .h-tile { background: #ef4444; color: white; }
-        .o-tile { background: #3b82f6; color: white; }
-        .n-tile { background: #f59e0b; color: white; }
-        .drop-area { border: 2px dashed var(--primary); background: #f0fdf4; min-height: 80px; border-radius: 8px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 15px; }
-        .drop-placeholder { color: #64748b; font-style: italic; width: 100%; text-align: center; }
-        .meter-container { margin: 20px 0; background: #e2e8f0; border-radius: 12px; height: 24px; overflow: hidden; position: relative; }
-        .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #22c55e, #15803d); transition: width 0.4s ease; }
-        .meter-label { position: absolute; top: 2px; left: 50%; transform: translateX(-50%); font-weight: bold; font-size: 0.85rem; color: #0f172a; }
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn { padding: 10px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background: var(--primary); color: white; }
-        .btn-reset { background: #64748b; }
-        .feedback-box { margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: 500; display: none; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h3>🧪 Hands-On Lab: Build a Molecule</h3>
-    <p>Click element tiles to add atoms into the assembly box, test energy yield, and analyze molecule types!</p>
-
-    <div class="atom-bin">
-        <div class="atom-tile c-tile" onclick="addAtom('C', '#334155')">+ Carbon (C)</div>
-        <div class="atom-tile h-tile" onclick="addAtom('H', '#ef4444')">+ Hydrogen (H)</div>
-        <div class="atom-tile o-tile" onclick="addAtom('O', '#3b82f6')">+ Oxygen (O)</div>
-        <div class="atom-tile n-tile" onclick="addAtom('N', '#f59e0b')">+ Nitrogen (N)</div>
-    </div>
-
-    <h4>Your Assembled Molecule Structure:</h4>
-    <div class="drop-area" id="drop-zone">
-        <div class="drop-placeholder" id="placeholder">Click any element tile above to add atoms here...</div>
-    </div>
-
-    <h4>Potential Usable Energy Output:</h4>
-    <div class="meter-container">
-        <div class="meter-fill" id="energy-meter"></div>
-        <div class="meter-label" id="meter-text">0 kcal/g (Add Carbon atoms!)</div>
-    </div>
-
-    <div class="btn-group">
-        <button class="btn" onclick="analyzeMolecule()">Analyze Molecule Type</button>
-        <button class="btn btn-reset" onclick="resetLab()">Clear / Reset</button>
-    </div>
-
-    <div class="feedback-box" id="feedback"></div>
-</div>
-
-<script>
-    let atoms = { C: 0, H: 0, O: 0, N: 0 };
-
-    function addAtom(type, color) {
-        document.getElementById('placeholder').style.display = 'none';
-        atoms[type]++;
-        const badge = document.createElement('span');
-        badge.style.background = color;
-        badge.style.color = 'white';
-        badge.style.padding = '6px 12px';
-        badge.style.borderRadius = '15px';
-        badge.style.fontWeight = 'bold';
-        badge.style.fontSize = '0.9rem';
-        badge.innerText = type;
-        document.getElementById('drop-zone').appendChild(badge);
-        updateMeter();
-    }
-
-    function updateMeter() {
-        let carbonCount = atoms.C;
-        let percentage = Math.min(carbonCount * 12.5, 100);
-        let energyVal = carbonCount * 0.75;
-        document.getElementById('energy-meter').style.width = percentage + '%';
-        document.getElementById('meter-text').innerText = `${energyVal.toFixed(1)} kcal/g potential energy (${carbonCount} Carbon bonds)`;
-    }
-
-    function analyzeMolecule() {
-        const fb = document.getElementById('feedback');
-        fb.style.display = 'block';
-        if (atoms.C === 0) {
-            fb.style.background = '#fee2e2';
-            fb.style.color = '#991b1b';
-            fb.innerText = "⚠️ Organic molecules require Carbon backbones! Add Carbon atoms to build a macromolecule.";
-        } else if (atoms.N > 0) {
-            fb.style.background = '#dcfce7';
-            fb.style.color = '#15803d';
-            fb.innerHTML = "<strong>✅ Protein / Amino Acid Detected!</strong><br>Contains Nitrogen (N). Essential for building lion/elephant muscle tissues and enzymes.";
-        } else if (atoms.C >= 10 && atoms.H >= 20) {
-            fb.style.background = '#fef3c7';
-            fb.style.color = '#b45309';
-            fb.innerHTML = "<strong>⚡ Lipid (Fat) Molecule Detected!</strong><br>High concentration of Carbon-Hydrogen bonds yields dense long-term energy storage.";
-        } else if (atoms.C >= 1 && atoms.O >= 1) {
-            fb.style.background = '#e0f2fe';
-            fb.style.color = '#0369a1';
-            fb.innerHTML = "<strong>🍞 Carbohydrate (Sugar) Detected!</strong><br>Composed of C, H, and O. Primary quick-energy source found in plant diets.";
-        } else {
-            fb.style.background = '#f1f5f9';
-            fb.style.color = '#334155';
-            fb.innerText = "Keep adding Hydrogen and Oxygen atoms to complete your biological molecule!";
-        }
-    }
-
-    function resetLab() {
-        atoms = { C: 0, H: 0, O: 0, N: 0 };
-        document.getElementById('drop-zone').innerHTML = '<div class="drop-placeholder" id="placeholder">Click any element tile above to add atoms here...</div>';
-        document.getElementById('energy-meter').style.width = '0%';
-        document.getElementById('meter-text').innerText = '0 kcal/g (Add Carbon atoms!)';
-        document.getElementById('feedback').style.display = 'none';
-    }
-</script>
-
 </body>
 </html>
