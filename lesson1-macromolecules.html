@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Concept Check</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+            color: #1f2937;
+        }
+
+        .interactive-container {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 24px;
+            background-color: #f8fafc;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        .question {
+            font-size: 1.05rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .option {
+            display: block;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            border-color: #2e7d32;
+            background-color: #f0fdf4;
+        }
+
+        .option input {
+            margin-right: 10px;
+        }
+
+        .btn {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #1b5e20;
+        }
+
+        .feedback {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: none;
+            line-height: 1.5;
+        }
+
+        .feedback.correct {
+            display: block;
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .feedback.incorrect {
+            display: block;
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="interactive-container">
+    <h3>Self-Check: Nitrogen Transfer in Food Webs</h3>
+    
+    <p class="question">
+        An elephant's plant diet is high in carbohydrates containing only <strong>Carbon (C)</strong>, <strong>Hydrogen (H)</strong>, and <strong>Oxygen (O)</strong>. However, an elephant's body requires large amounts of protein containing <strong>Nitrogen (N)</strong> to build muscle.<br><br>
+        <strong>Where does the elephant get the Nitrogen required to build its proteins?</strong>
+    </p>
+
+    <form id="quiz-form">
+        <label class="option">
+            <input type="radio" name="q1" value="a">
+            <strong>A)</strong> Elephants absorb gaseous Nitrogen ($N_2$) directly from the air when breathing.
+        </label>
+        
+        <label class="option">
+            <input type="radio" name="q1" value="b">
+            <strong>B)</strong> Elephants obtain Nitrogen by ingesting plant proteins containing nitrogen that plants absorbed from soil nutrients.
+        </label>
+        
+        <label class="option">
+            <input type="radio" name="q1" value="c">
+            <strong>C)</strong> Elephants synthesize Nitrogen atoms internally through chemical metabolic processes.
+        </label>
+
+        <button type="button" class="btn" onclick="checkAnswer()">Check Answer</button>
+    </form>
+
+    <div id="feedback" class="feedback"></div>
+</div>
+
+<script>
+    function checkAnswer() {
+        const selected = document.querySelector('input[name="q1"]:checked');
+        const feedback = document.getElementById('feedback');
+
+        if (!selected) {
+            feedback.className = "feedback incorrect";
+            feedback.innerText = "Please select an answer before checking.";
+            return;
+        }
+
+        if (selected.value === 'b') {
+            feedback.className = "feedback correct";
+            feedback.innerHTML = "<strong>Correct!</strong> Animals cannot absorb atmospheric nitrogen gas directly, nor can living organisms create new chemical elements. Plants take up fixed nitrogen compounds (nitrates) from the soil to make amino acids, which herbivores ingest to build their own tissue proteins.";
+        } else if (selected.value === 'a') {
+            feedback.className = "feedback incorrect";
+            feedback.innerHTML = "<strong>Incorrect:</strong> While the air is ~78% Nitrogen gas ($N_2$), animals cannot fix atmospheric nitrogen gas into biological molecules through respiration.";
+        } else {
+            feedback.className = "feedback incorrect";
+            feedback.innerHTML = "<strong>Incorrect:</strong> Chemical reactions in living organisms rearrange existing atoms—they cannot create new elements like Nitrogen from Carbon, Hydrogen, or Oxygen.";
+        }
+    }
+</script>
+
+</body>
+</html>
