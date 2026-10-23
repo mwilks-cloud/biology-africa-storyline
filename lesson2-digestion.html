@@ -6,9 +6,12 @@
     <title>Lion Protein Rebuilder</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 15px; background: #ffffff; color: #1f2937; }
-        .container { max-width: 800px; margin: 0 auto; background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #cbd5e1; }
+        .container { max-width: 820px; margin: 0 auto; background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #cbd5e1; }
         h3 { color: #1e3a8a; margin-top: 0; font-size: 1.3rem; }
-        .stage { background: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
+        .selector-group { margin-bottom: 15px; }
+        select { font-size: 1rem; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: white; cursor: pointer; font-weight: bold; color: #1e3a8a; }
+        .stage { background: #ffffff; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #cbd5e1; }
+        .chem-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 10px 12px; margin-top: 8px; border-radius: 4px; font-family: monospace; font-size: 0.95rem; color: #1e3a8a; }
         .aa-pool { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .aa-chip { background: #3b82f6; color: white; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; user-select: none; transition: background 0.2s; }
         .aa-chip:hover { background: #1d4ed8; }
@@ -21,28 +24,36 @@
 </head>
 <body>
     <div class="container">
-        <h3>🦁 Interactive Lab: Rebuilding Lion Muscle Protein</h3>
-        <p style="margin-bottom: 15px;">A lion digested zebra muscle into individual amino acids. Select the amino acids in the correct order to assemble <strong>Lion Muscle Protein (Myosin)</strong>!</p>
+        <h3>🦁 Interactive Lab: Rebuilding Lion Proteins</h3>
         
-        <div class="stage">
-            <strong>Target Lion Muscle Sequence:</strong><br>
-            <span style="color:#1e3a8a; font-weight: bold; font-size: 1.05rem;">[ Leucine ] ➔ [ Glycine ] ➔ [ Valine ] ➔ [ Alanine ]</span>
+        <div class="selector-group">
+            <label for="proteinSelect" style="font-weight: bold;">Select Target Lion Protein to Build: </label>
+            <select id="proteinSelect" onchange="changeProtein()">
+                <option value="myosin">1. Lion Muscle (Myosin)</option>
+                <option value="keratin">2. Lion Mane / Claws (Keratin)</option>
+                <option value="pepsin">3. Stomach Digesting Enzyme (Pepsin)</option>
+            </select>
+        </div>
+
+        <div class="stage" id="proteinInfo">
+            <!-- Dynamic protein info inserted via JavaScript -->
         </div>
 
         <h4 style="margin-bottom: 5px;">1. Click Amino Acids from the Digested Pool:</h4>
         <div class="aa-pool" id="pool">
-            <div class="aa-chip" onclick="addAA('Glycine')">+ Glycine</div>
-            <div class="aa-chip" onclick="addAA('Leucine')">+ Leucine</div>
-            <div class="aa-chip" onclick="addAA('Alanine')">+ Alanine</div>
-            <div class="aa-chip" onclick="addAA('Valine')">+ Valine</div>
-            <div class="aa-chip" onclick="addAA('Proline')">+ Proline</div>
+            <div class="aa-chip" onclick="addAA('Glycine')">+ Glycine (C₂H₅NO₂)</div>
+            <div class="aa-chip" onclick="addAA('Leucine')">+ Leucine (C₆H₁₃NO₂)</div>
+            <div class="aa-chip" onclick="addAA('Alanine')">+ Alanine (C₃H₇NO₂)</div>
+            <div class="aa-chip" onclick="addAA('Valine')">+ Valine (C₅H₁₁NO₂)</div>
+            <div class="aa-chip" onclick="addAA('Proline')">+ Proline (C₅H₉NO₂)</div>
+            <div class="aa-chip" onclick="addAA('Cysteine')">+ Cysteine (C₃H₇NO₂S)</div>
         </div>
 
-        <h4 style="margin-bottom: 5px; margin-top: 20px;">2. Your Assembled Lion Muscle Chain:</h4>
+        <h4 style="margin-bottom: 5px; margin-top: 20px;">2. Your Assembled Protein Chain:</h4>
         <div class="target-box" id="chain"></div>
 
         <div class="btn-group">
-            <button class="btn" onclick="checkProtein()">Build Lion Muscle</button>
+            <button class="btn" onclick="checkProtein()">Synthesize Protein</button>
             <button class="btn btn-reset" onclick="resetChain()">Clear Chain</button>
         </div>
 
@@ -50,30 +61,70 @@
     </div>
 
     <script>
+        const proteins = {
+            myosin: {
+                name: "Lion Muscle (Myosin)",
+                seq: ['Leucine', 'Glycine', 'Valine', 'Alanine'],
+                formula: "Chemical Formula: C₁₆H₃₁N₄O₇",
+                structure: "Structure: Repeating α-Helical Heavy Chains (C-H-O-N)"
+            },
+            keratin: {
+                name: "Lion Mane / Claws (Keratin)",
+                seq: ['Cysteine', 'Proline', 'Cysteine', 'Valine'],
+                formula: "Chemical Formula: C₁₆H₂₈N₄O₇S₂",
+                structure: "Structure: Cross-Linked Disulfide Fiber Bonds (C-H-O-N-S)"
+            },
+            pepsin: {
+                name: "Digestive Enzyme (Pepsin)",
+                seq: ['Alanine', 'Valine', 'Glycine', 'Leucine'],
+                formula: "Chemical Formula: C₁₆H₃₁N₄O₇",
+                structure: "Structure: Globular Enzymatic Fold (Active Site Center)"
+            }
+        };
+
+        let currentKey = 'myosin';
         let built = [];
-        const target = ['Leucine', 'Glycine', 'Valine', 'Alanine'];
+
+        function renderInfo() {
+            const p = proteins[currentKey];
+            document.getElementById('proteinInfo').innerHTML = `
+                <strong>Target Amino Acid Sequence:</strong><br>
+                <span style="color:#1e3a8a; font-weight: bold; font-size: 1.05rem;">[ ${p.seq.join(' ] ➔ [ ')} ]</span>
+                <div class="chem-box">
+                    <strong>🧪 ${p.formula}</strong><br>
+                    <span>🔬 ${p.structure}</span>
+                </div>
+            `;
+        }
+
+        function changeProtein() {
+            currentKey = document.getElementById('proteinSelect').value;
+            resetChain();
+            renderInfo();
+        }
 
         function addAA(aa) {
             built.push(aa);
             const chip = document.createElement('span');
-            chip.style.cssText = 'background:#15803d; color:white; padding:6px 12px; border-radius:15px; font-weight:bold;';
+            chip.style.cssText = 'background:#15803d; color:white; padding:6px 12px; border-radius:15px; font-weight:bold; font-size:0.9rem;';
             chip.innerText = aa;
             document.getElementById('chain').appendChild(chip);
         }
 
         function checkProtein() {
             const fb = document.getElementById('fb');
+            const target = proteins[currentKey].seq;
             fb.style.display = 'block';
             if (JSON.stringify(built) === JSON.stringify(target)) {
                 fb.style.background = '#dcfce7';
                 fb.style.color = '#15803d';
                 fb.style.border = '1px solid #86efac';
-                fb.innerHTML = '🎉 Success! The lion’s cells successfully linked the amino acids to build functional Lion Muscle Tissue!';
+                fb.innerHTML = `🎉 Success! Linked amino acids successfully built functional <strong>${proteins[currentKey].name}</strong>!`;
             } else {
                 fb.style.background = '#fee2e2';
                 fb.style.color = '#991b1b';
                 fb.style.border = '1px solid #fca5a5';
-                fb.innerHTML = '❌ Incorrect sequence! Functional proteins require amino acids in a precise order. Click "Clear Chain" and try again.';
+                fb.innerHTML = '❌ Incorrect sequence! Amino acids must be linked in the exact target order. Click "Clear Chain" and try again.';
             }
         }
 
@@ -82,6 +133,8 @@
             document.getElementById('chain').innerHTML = '';
             document.getElementById('fb').style.display = 'none';
         }
+
+        renderInfo();
     </script>
 </body>
 </html>
