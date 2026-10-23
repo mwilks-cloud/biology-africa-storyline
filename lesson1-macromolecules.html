@@ -155,7 +155,6 @@
                 const originX = rect.left + rect.width / 2 - stageRect.left;
                 const originY = rect.top + rect.height / 2 - stageRect.top;
 
-                // Generate 8 explosive particles per atom
                 for (let i = 0; i < 8; i++) {
                     const spark = document.createElement('div');
                     spark.className = 'spark';
@@ -190,14 +189,10 @@
             }
 
             bondsBroken = true;
-
-            // Trigger explosive energy burst
             createSparkles();
 
-            // Clear visual bond lines
             document.getElementById('svg-bonds').innerHTML = '';
 
-            // Scatter atoms visually to represent digestion / bond breakage
             nodeList.forEach(node => {
                 const randomX = (Math.random() - 0.5) * 80;
                 const randomY = (Math.random() - 0.5) * 80;
@@ -209,4 +204,22 @@
 
             fb.style.background = '#dcfce7';
             fb.style.color = '#15803d';
-            fb.style.border = '1px solid
+            fb.style.border = '1px solid #86efac';
+            fb.innerHTML = `🔥 <strong>BOOM! Bonds Broken! Released ${totalEnergy} kcal of Usable Energy (ATP)!</strong><br>When cells break chemical bonds through digestion and cellular respiration, energy stored in those shared electron bonds is released to power the body!`;
+        }
+
+        function resetLab() {
+            atoms = { C: 0, H: 0, O: 0, N: 0 };
+            nodeList = [];
+            bondsBroken = false;
+            document.getElementById('node-container').innerHTML = '<span style="color:#64748b; font-style:italic;" id="empty-msg">Click element buttons above to assemble atoms & form covalent bonds...</span>';
+            document.getElementById('svg-bonds').innerHTML = '';
+            document.getElementById('energy-meter').style.width = '0%';
+            document.getElementById('meter-text').innerText = '0 Chemical Bonds Formed (0 kcal/g)';
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        window.addEventListener('resize', drawBonds);
+    </script>
+</body>
+</html>
